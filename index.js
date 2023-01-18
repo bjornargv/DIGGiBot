@@ -6,6 +6,7 @@ const client = new Discord.Client({ intents: [3276799] });
 const counts = new Map();
 const leetRegex = /(^|[^a-z])leet($|[^a-z])/i;
 
+
 function loadCounts() {
 	fs.readFile("counts.json", (err, data) => {
 		if (err) {
@@ -79,7 +80,7 @@ client.on("messageCreate", async (message) => {
 		leetMessageCount++;
 
 		if (leetMessageCount === 1) {
-			setTimeout(() => {
+			setTimeout(async () => {
 				const entries = Array.from(counts.entries()).map(
 					([userId, {count}]) => ({userId, count})
 				);
@@ -94,7 +95,13 @@ client.on("messageCreate", async (message) => {
 					} leet(s)\n`;
 				}
 
-				message.channel.send(leaderboardMessage);
+				let channel;
+				try {
+					channel = await client.channels.fetch("861551095804067875");
+				} catch (e) {
+					return;
+				}
+				await channel.send(leaderboardMessage);
 				leetMessageCount = 0;
 			}, 60 * 1000);
 		}
@@ -107,4 +114,4 @@ client.on("messageCreate", async (message) => {
 	}
 });
 
-client.login(");
+client.login("INSERT_TOKEN");
