@@ -1,3 +1,4 @@
+require("dotenv").config();
 const Discord = require("discord.js");
 const fs = require("fs");
 
@@ -114,4 +115,4 @@ client.on("messageCreate", async (message) => {
 	}
 });
 
-client.login("INSERT_TOKEN");
+client.login(process.env["TOKEN"]);
