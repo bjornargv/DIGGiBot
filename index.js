@@ -42,6 +42,26 @@ client.on("ready", () => {
 	loadCounts();
 });
 
+// kontakt-oss
+client.on("messageCreate", async (message) => {
+    console.log("feedback active");
+    if (message.channel.id === '1072226635778101328') {
+        const targetChannel = client.channels.cache.get('1072226693567217844');
+        if (!targetChannel) {
+            console.error("Target channel not found");
+            return;
+        }
+        const now = new Date();
+        try {
+            await targetChannel.send(`${now.toLocaleString()} Melding:\n"${message.content}"`);
+            await message.delete();
+        } catch (error) {
+            console.error("Error sending message or deleting message:", error);
+        }
+    }
+});
+
+
 client.on("messageCreate", async (message) => {
 	if (message.author.bot) return;
 
@@ -115,4 +135,30 @@ client.on("messageCreate", async (message) => {
 	}
 });
 
-client.login(process.env["TOKEN"]);
+client.on("messageCreate", async (message) => {
+	console.log("msg");
+	if (message.author.bot) return;
+	if (!message.content.startsWith("/")) return;
+  
+	const args = message.content.slice(1).split(" ");
+	const command = args.shift().toLowerCase();
+  
+	if (command === "leaderboard") {
+	  // Code to create the leaderboard message and send it to the channel
+	  const entries = Array.from(counts.entries()).map(
+		([userId, {count}]) => ({userId, count})
+	);
+	entries.sort((a, b) => b.count - a.count);
+	  let leaderboardMessage = "**Leaderboard:**\n";
+	  for (let i = 0; i < entries.length && i < 15; i++) {
+		const user = client.users.cache.get(entries[i].userId);
+		leaderboardMessage += `${i + 1}. ${user.username} - ${
+			entries[i].count
+		} leet(s)\n`;
+	}
+	  await message.channel.send(leaderboardMessage);
+	}
+  });
+  
+
+client.login(process.env.TOKEN);
